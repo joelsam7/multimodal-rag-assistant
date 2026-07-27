@@ -23,8 +23,15 @@ Thumbs.db
 # Logs
 *.log
 
+# Uploaded files
 backend/uploads/*
 !backend/uploads/.gitkeep
+
+# Image uploads
+backend/image_uploads/
+
+# ChromaDB database
+backend/chroma_db/
 
 structure.txt
 tree.txt
