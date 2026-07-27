@@ -25,8 +25,6 @@ async def chat(request: ChatRequest):
 
     context = "\n\n".join(results["documents"][0]) 
 
-    print(context)
-
 
 
     prompt = rag_service.build_prompt(

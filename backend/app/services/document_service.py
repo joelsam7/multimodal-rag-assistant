@@ -12,7 +12,8 @@ ALLOWED_EXTENSIONS = {
     ".xlsx",
     ".png",
     ".jpg",
-    ".jpeg"
+    ".jpeg",
+    ".txt"
 }
 
 

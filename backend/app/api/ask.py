@@ -46,9 +46,6 @@ async def ask(request: AskRequest):
     )
 
     context = "\n\n".join(best_chunks)
-    print("=" * 50)
-    print(context)
-    print("=" * 50)
 
     prompt = rag_service.build_prompt(
         request.question,

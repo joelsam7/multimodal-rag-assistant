@@ -59,6 +59,7 @@ class ChromaService:
         )
 
         return filenames
+    
     def get_all_chunks(self):
 
         data = self.collection.get(
