@@ -1,12 +1,16 @@
-from fastapi import APIRouter, File, HTTPException, UploadFile
-from backend.app.services.document_service import document_service
+from fastapi import APIRouter
+
+from app.services.chroma_service import chroma_service
 
 router = APIRouter()
 
 
-@router.post("/upload")
-async def upload_document(file: UploadFile = File(...)):
-    try:
-        return await document_service.save_file(file)
-    except ValueError as e:
-        raise HTTPException(status_code=400, detail=str(e))
+@router.get("/documents")
+async def list_documents():
+
+    documents = chroma_service.list_documents()
+
+    return {
+        "documents": documents,
+        "count": len(documents)
+    }

@@ -25,3 +25,6 @@ Thumbs.db
 
 backend/uploads/*
 !backend/uploads/.gitkeep
+
+structure.txt
+tree.txt
