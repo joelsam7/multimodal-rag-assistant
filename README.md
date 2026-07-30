@@ -1,4 +1,4 @@
-# Enterprise Multi-Modal RAG Assistant
+# Ent"""erprise Multi-Modal RAG Assistant
 
 An AI-powered multimodal Retrieval-Augmented Generation (RAG) assistant that allows users to upload documents and images, retrieve relevant information, and generate accurate responses using Large Language Models and Vision Language Models.
 
@@ -238,4 +238,4 @@ Returns uploaded and indexed documents.
 
 ## License
 
-This project is developed for educational and portfolio purposes.
+This project is developed for educational and portfolio purposes."""
