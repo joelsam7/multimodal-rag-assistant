@@ -16,12 +16,55 @@ class AskRequest(BaseModel):
 
 @router.post("/ask")
 async def ask(request: AskRequest):
+    question = request.question.strip()
+    lower_question = question.lower()
+
+
+    casual_messages = {
+
+        "hi": "Hello! How can I help you with your documents?",
+        "hello": "Hello! How can I help you today?",
+        "hey": "Hey! What would you like to know?",
+        "thanks": "You're welcome!",
+        "thank you": "You're welcome!",
+        "ty": "You're welcome!",
+        "ok": "Alright!",
+        "okay": "Alright!",
+        "bye": "Goodbye! Have a great day.",
+        "thx": "You're welcome!",
+        "tysm": "You're welcome!",
+        "good morning": "Good morning! How can I help you?",
+        "good evening": "Good evening! How can I help you?"
+
+    }
+
+
+    if lower_question in casual_messages:
+
+        return {
+
+            "question": question,
+            "answer": casual_messages[lower_question],
+            "sources": []
+
+        }
+
+
+
 
     query_embedding = embedding_service.create_embeddings(
         [request.question]
     )[0]
 
     results = chroma_service.search_documents(query_embedding)
+    if not results["documents"] or not results["documents"][0]:
+
+        return {
+            "question": request.question,
+            "answer": "I could not find that information in the uploaded documents.",
+            "sources": []
+        }
+
 
     all_chunks = chroma_service.get_all_chunks()
 

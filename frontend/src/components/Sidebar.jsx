@@ -8,6 +8,7 @@ import {
 
 function Sidebar({
   onNewChat,
+  
   onDocuments,
   onHistory,
   onSettings,
@@ -39,6 +40,7 @@ function Sidebar({
         p-3
         w-full
         hover:bg-white/10
+        mb-5
         "
       >
 

@@ -59,6 +59,24 @@ class ChromaService:
         )
 
         return filenames
+
+    def delete_document(self, filename):
+
+        data = self.collection.get()
+
+        ids = [
+            data["ids"][i]
+            for i, metadata in enumerate(data["metadatas"])
+            if metadata["source"] == filename
+        ]
+
+        if ids:
+
+            self.collection.delete(
+                ids=ids
+            )
+
+
     
     def get_all_chunks(self):
 

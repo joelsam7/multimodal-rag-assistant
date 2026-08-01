@@ -3,6 +3,7 @@ from ollama import chat
 
 class QwenService:
 
+
     def generate_response(self, prompt):
 
         response = chat(
@@ -17,6 +18,8 @@ class QwenService:
 
         return response["message"]["content"]
 
+
+
     def analyze_image(self, image_path, question):
 
         response = chat(
@@ -25,12 +28,15 @@ class QwenService:
                 {
                     "role": "user",
                     "content": question,
-                    "images": [image_path]
+                    "images": [
+                        image_path
+                    ]
                 }
             ]
         )
 
         return response["message"]["content"]
+
 
 
 qwen_service = QwenService()

@@ -66,10 +66,10 @@ function Desktop({children}) {
 
           <div className="space-x-6">
 
-            <span>File</span>
+            {/* <span>File</span>
             <span>Chat</span>
             <span>Sources</span>
-            <span>Help</span>
+            <span>Help</span> */}
 
           </div>
 

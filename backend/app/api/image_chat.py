@@ -10,10 +10,13 @@ IMAGE_DIR = Path("image_uploads")
 IMAGE_DIR.mkdir(exist_ok=True)
 
 
+from fastapi import APIRouter, File, UploadFile, Form
+
+
 @router.post("/image-chat")
 async def image_chat(
     file: UploadFile = File(...),
-    question: str = "Describe this image."
+    question: str = Form("Describe this image.")
 ):
 
     image_path = IMAGE_DIR / file.filename
