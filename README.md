@@ -1,6 +1,6 @@
-# Ent"""erprise Multi-Modal RAG Assistant
+# Multi-Modal RAG Assistant
 
-An AI-powered multimodal Retrieval-Augmented Generation (RAG) assistant that allows users to upload documents and images, retrieve relevant information, and generate accurate responses using Large Language Models and Vision Language Models.
+An AI-powered multimodal Retrieval-Augmented Generation (RAG) assistant that allows users to upload documents and images, retrieve relevant information, and generate context-aware responses using Large Language Models (LLMs) and Vision Language Models (VLMs).
 
 ## Features
 
@@ -17,17 +17,25 @@ An AI-powered multimodal Retrieval-Augmented Generation (RAG) assistant that all
 - Performs OCR on images using Tesseract
 - Splits documents into meaningful chunks
 - Generates vector embeddings
+- Stores document embeddings persistently using ChromaDB
 
 ### Retrieval Pipeline
-- Semantic search using ChromaDB
+- Semantic search using Sentence Transformers + ChromaDB
 - Keyword search using BM25
-- Hybrid search combining semantic and keyword retrieval
-- Cross-encoder reranking for improved relevance
+- Hybrid retrieval combining semantic and keyword search
+- CrossEncoder reranking for improved relevance
 
 ### AI Capabilities
-- Question answering using Qwen2.5 LLM
+- Document question answering using Qwen2.5 LLM
 - Image understanding using Qwen2.5-VL
-- Context-based responses using RAG pipeline
+- Context-grounded responses using RAG pipeline
+- Source attribution for generated answers
+
+### Document Management
+- Upload documents
+- View indexed documents
+- Delete documents from the knowledge base
+- Handles empty knowledge bases gracefully
 
 ## System Architecture
 
@@ -35,6 +43,8 @@ An AI-powered multimodal Retrieval-Augmented Generation (RAG) assistant that all
 User
  |
  | Upload Document / Ask Question
+ |
+React Frontend
  |
 FastAPI Backend
  |
@@ -56,12 +66,16 @@ FastAPI Backend
  |      ├── Semantic Search
  |      └── BM25 Keyword Search
  |
- ├── Cross Encoder Reranking
+ ├── CrossEncoder Reranking
  |
- └── Qwen LLM / Qwen-VL Response Generation
+ └── Qwen2.5 / Qwen2.5-VL Response Generation
 ```
 
 ## Tech Stack
+
+### Frontend
+- React
+- Tailwind CSS
 
 ### Backend
 - Python
@@ -69,9 +83,10 @@ FastAPI Backend
 
 ### AI / ML
 - Sentence Transformers
+- BM25
+- CrossEncoder Reranker
 - Qwen2.5
 - Qwen2.5-VL
-- Cross Encoder Reranker
 
 ### Database
 - ChromaDB
@@ -86,7 +101,7 @@ FastAPI Backend
 
 ```
 multimodal-rag-assistant/
-│
+
 ├── backend/
 │   ├── app/
 │   │   ├── api/
@@ -95,8 +110,11 @@ multimodal-rag-assistant/
 │   │
 │   ├── chroma_db/
 │   ├── uploads/
-│   ├── requirements.txt
-│   └── venv/
+│   └── requirements.txt
+│
+├── frontend/
+│   ├── src/
+│   └── package.json
 │
 └── README.md
 ```
@@ -109,27 +127,25 @@ multimodal-rag-assistant/
 git clone <repository-url>
 ```
 
-### Navigate to Backend
+### Backend Setup
 
 ```bash
 cd backend
 ```
 
-### Create Virtual Environment
+Create virtual environment:
 
 ```bash
 python -m venv venv
 ```
 
-### Activate Virtual Environment
-
-Windows:
+Activate environment (Windows):
 
 ```bash
 venv\Scripts\activate
 ```
 
-### Install Dependencies
+Install dependencies:
 
 ```bash
 pip install -r requirements.txt
@@ -137,13 +153,13 @@ pip install -r requirements.txt
 
 ## Running the Application
 
-Start the FastAPI server:
+Start backend server:
 
 ```bash
 uvicorn app.main:app --reload
 ```
 
-The server will run at:
+Backend runs at:
 
 ```
 http://127.0.0.1:8000
@@ -155,9 +171,17 @@ API documentation:
 http://127.0.0.1:8000/docs
 ```
 
+Start frontend:
+
+```bash
+cd frontend
+npm install
+npm run dev
+```
+
 ## API Endpoints
 
-### Upload Documents
+### Upload Document
 
 ```
 POST /upload
@@ -165,7 +189,7 @@ POST /upload
 
 Uploads and indexes documents into ChromaDB.
 
-Supported formats:
+Supported:
 - PDF
 - DOCX
 - TXT
@@ -179,21 +203,11 @@ Supported formats:
 POST /ask
 ```
 
-Uses:
+Pipeline:
 - Semantic retrieval
 - BM25 keyword retrieval
-- Reranking
-- RAG generation
-
----
-
-### Chat
-
-```
-POST /chat
-```
-
-Provides conversational document-based responses.
+- CrossEncoder reranking
+- RAG response generation
 
 ---
 
@@ -203,7 +217,7 @@ Provides conversational document-based responses.
 POST /image-chat
 ```
 
-Allows users to ask questions about images using Qwen2.5-VL.
+Uses Qwen2.5-VL for image-based question answering.
 
 ---
 
@@ -213,29 +227,38 @@ Allows users to ask questions about images using Qwen2.5-VL.
 GET /documents
 ```
 
-Returns uploaded and indexed documents.
+Returns indexed documents.
+
+---
+
+### Delete Document
+
+```
+DELETE /documents/{filename}
+```
+
+Removes a document from the knowledge base.
 
 ## Workflow
 
 1. User uploads a document or image.
-2. Text is extracted from the file.
-3. Documents are divided into chunks.
-4. Embeddings are generated using Sentence Transformers.
+2. Content is extracted from the file.
+3. Documents are split into chunks.
+4. Sentence Transformer generates embeddings.
 5. Embeddings are stored in ChromaDB.
 6. User submits a question.
-7. Relevant chunks are retrieved using hybrid search.
-8. Cross encoder reranks the results.
+7. Relevant information is retrieved using hybrid search.
+8. CrossEncoder reranks retrieved chunks.
 9. Qwen generates an answer using retrieved context.
 
 ## Future Improvements
 
-- User authentication
-- Conversation memory
+- User authentication and authorization
+- Persistent conversation history
 - Cloud deployment
-- More document format support
 - Advanced multimodal embeddings
-- Web-based frontend interface
+- Enterprise access control
 
 ## License
 
-This project is developed for educational and portfolio purposes."""
+This project is developed for educational and portfolio purposes.
