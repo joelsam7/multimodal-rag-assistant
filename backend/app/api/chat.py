@@ -62,7 +62,7 @@ async def chat(request: ChatRequest):
         return {
 
             "question": question,
-            "answer": "I could not find that information in the uploaded documents.",
+            "answer": "I could not find this information in the uploaded documents. Please upload a relevant document or try rephrasing your question.",
             "sources": []
 
         }
