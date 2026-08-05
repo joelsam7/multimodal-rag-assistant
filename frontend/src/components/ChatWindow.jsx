@@ -1,21 +1,30 @@
 import ChatMessage from "./ChatMessage";
-
+import { useEffect, useRef } from "react";
 
 function ChatWindow({
   messages,
   loading
 }) {
 
+  const bottomRef = useRef(null);
+
+  useEffect(() => {
+    bottomRef.current?.scrollIntoView({
+      behavior: "smooth"
+    });
+  }, [messages, loading]);
+
+
   return (
 
-      <div
+    <div
       className="
       flex-1
       overflow-y-auto
       space-y-4
       min-h-0
       "
-      >
+    >
 
       {
         messages.length === 0 && (
@@ -56,7 +65,7 @@ function ChatWindow({
 
 
       {
-        messages.map((msg,index)=>(
+        messages.map((msg, index) => (
 
           <ChatMessage
             key={index}
@@ -77,6 +86,10 @@ function ChatWindow({
 
         )
       }
+
+
+      {/* Auto scroll target */}
+      <div ref={bottomRef}></div>
 
 
     </div>
