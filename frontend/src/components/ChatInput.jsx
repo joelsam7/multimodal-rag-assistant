@@ -66,12 +66,48 @@ function ChatInput({
       >
 
 
-        <input
-          type="file"
-          hidden
-          ref={fileInputRef}
-          onChange={handleFile}
-        />
+      <input
+  type="file"
+  hidden
+  ref={fileInputRef}
+  onChange={(e) => {
+
+    const file = e.target.files[0];
+
+    if (!file) return;
+
+
+    const allowedExtensions = [
+      ".pdf",
+      ".docx",
+      ".txt",
+      ".png",
+      ".jpg",
+      ".jpeg"
+    ];
+
+
+    const extension = file.name
+      .substring(file.name.lastIndexOf("."))
+      .toLowerCase();
+
+
+    if (!allowedExtensions.includes(extension)) {
+
+      alert(
+        "Unsupported file type. Please upload PDF, DOCX, TXT, PNG, JPG or JPEG files."
+      );
+
+      e.target.value = "";
+      return;
+
+    }
+
+
+    handleFile(e);
+
+  }}
+/>
 
 
         <button
