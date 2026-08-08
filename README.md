@@ -460,5 +460,3 @@ The project is currently being refined toward a more production-oriented enterpr
 
 **Joel Sam**
 
-B.E. Computer Science and Engineering
-Artificial Intelligence & Machine Learning
