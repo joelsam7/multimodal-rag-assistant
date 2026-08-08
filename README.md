@@ -1,145 +1,328 @@
-# Multi-Modal RAG Assistant
+# Enterprise Multi-Modal RAG Assistant
 
-An AI-powered multimodal Retrieval-Augmented Generation (RAG) assistant that allows users to upload documents and images, retrieve relevant information, and generate context-aware responses using Large Language Models (LLMs) and Vision Language Models (VLMs).
+An enterprise-oriented Retrieval-Augmented Generation (RAG) system designed to interact with uploaded documents and images using semantic retrieval, keyword search, hybrid retrieval, reranking, and multimodal language models.
 
-## Features
+The system allows users to upload documents, ask questions based on their content, and analyze images through a unified conversational interface.
 
-### Document Processing
-- Supports multiple file formats:
-  - PDF
-  - DOCX
-  - TXT
-  - PNG
-  - JPG
-  - JPEG
+## Overview
 
-- Extracts text from documents
-- Performs OCR on images using Tesseract
-- Splits documents into meaningful chunks
-- Generates vector embeddings
-- Stores document embeddings persistently using ChromaDB
+Traditional LLM applications can generate responses using information learned during model training, which can lead to outdated or unsupported answers.
 
-### Retrieval Pipeline
-- Semantic search using Sentence Transformers + ChromaDB
-- Keyword search using BM25
-- Hybrid retrieval combining semantic and keyword search
-- CrossEncoder reranking for improved relevance
+This project addresses that problem by implementing a Retrieval-Augmented Generation pipeline that retrieves relevant information from user-provided documents before generating a response.
 
-### AI Capabilities
-- Document question answering using Qwen2.5 LLM
-- Image understanding using Qwen2.5-VL
-- Context-grounded responses using RAG pipeline
-- Source attribution for generated answers
+The system also extends traditional RAG with multimodal capabilities, allowing image-based queries through a Vision-Language Model.
 
-### Document Management
-- Upload documents
-- View indexed documents
-- Delete documents from the knowledge base
-- Handles empty knowledge bases gracefully
+## Key Features
 
-## System Architecture
+* PDF and DOCX document processing
+* Text extraction and document chunking
+* Semantic search using vector embeddings
+* Keyword-based retrieval using BM25
+* Hybrid retrieval combining semantic and keyword search
+* Cross-Encoder based reranking
+* Context-grounded response generation
+* Multimodal image understanding
+* Persistent vector storage using ChromaDB
+* REST APIs built with FastAPI
+* Interactive web interface built with React
+* Local LLM inference using Ollama
 
-```
-User
- |
- | Upload Document / Ask Question
- |
+## Architecture
+
+```text
+                    User
+                     |
+                     v
+              React Frontend
+                     |
+                     v
+              FastAPI Backend
+                /          \
+               /            \
+        Document Flow     Query Flow
+             |                |
+             v                v
+      Document Processing   Query Processing
+             |                |
+             v                v
+       Text Extraction    Hybrid Retrieval
+             |                |
+             v                |
+        Text Chunking          |
+             |                |
+             v                v
+       Embeddings       Semantic + BM25
+             |                |
+             v                v
+          ChromaDB      Candidate Documents
+                              |
+                              v
+                     Cross-Encoder Reranker
+                              |
+                              v
+                      Relevant Context
+                              |
+                              v
+                         Qwen2.5
+                              |
+                              v
+                         Response
+
+
+Image Query
+     |
+     v
 React Frontend
- |
-FastAPI Backend
- |
- ├── Document Processing
- |      |
- |      ├── PDF Extraction
- |      ├── DOCX Extraction
- |      ├── TXT Extraction
- |      └── Image OCR
- |
- ├── Text Chunking
- |
- ├── Embedding Generation
- |
- ├── ChromaDB Vector Database
- |
- ├── Hybrid Retrieval
- |      |
- |      ├── Semantic Search
- |      └── BM25 Keyword Search
- |
- ├── CrossEncoder Reranking
- |
- └── Qwen2.5 / Qwen2.5-VL Response Generation
+     |
+     v
+FastAPI /image-chat
+     |
+     v
+Qwen2.5-VL
+     |
+     v
+Image Understanding
+     |
+     v
+Response
 ```
 
-## Tech Stack
+## RAG Pipeline
+
+### 1. Document Ingestion
+
+Uploaded documents are processed through the document processing pipeline.
+
+```text
+Document
+   |
+   v
+Text Extraction
+   |
+   v
+Text Chunking
+   |
+   v
+Embedding Generation
+   |
+   v
+ChromaDB
+```
+
+The system currently supports PDF and DOCX document processing.
+
+### 2. Embedding Generation
+
+Text chunks are converted into vector representations using SentenceTransformers.
+
+Model:
+
+```text
+all-MiniLM-L6-v2
+```
+
+These embeddings allow the system to retrieve documents based on semantic similarity rather than relying only on exact keyword matches.
+
+### 3. Hybrid Retrieval
+
+The retrieval pipeline combines two complementary approaches:
+
+**Semantic Search**
+
+Uses vector embeddings to identify content that is conceptually similar to the user's query.
+
+**BM25**
+
+Performs keyword-based retrieval and is particularly useful when exact terms, names, identifiers, or technical keywords are important.
+
+The results from both retrieval methods are combined to improve recall.
+
+### 4. Cross-Encoder Reranking
+
+Retrieved candidates are passed through a Cross-Encoder reranker.
+
+Instead of independently comparing the query and document embeddings, the Cross-Encoder evaluates the query-document pair directly to estimate relevance.
+
+```text
+User Query
+    |
+    v
+Hybrid Retrieval
+    |
+    v
+Candidate Documents
+    |
+    v
+Cross-Encoder
+    |
+    v
+Ranked Documents
+    |
+    v
+Top Relevant Context
+```
+
+### 5. Grounded Generation
+
+The highest-ranked context is provided to the Qwen2.5 language model.
+
+The generation pipeline is designed to keep responses grounded in the retrieved document context rather than relying on unsupported external information.
+
+## Multimodal Processing
+
+The system also supports image-based interaction through Qwen2.5-VL.
+
+The Vision-Language Model can process visual information and respond to queries involving images.
+
+```text
+Image
+  |
+  v
+Qwen2.5-VL
+  |
+  v
+Visual Understanding
+  |
+  v
+Generated Response
+```
+
+This enables use cases such as:
+
+* Image question answering
+* Document image understanding
+* OCR-related analysis
+* Visual content interpretation
+* Image-based queries
+
+## Technology Stack
 
 ### Frontend
-- React
-- Tailwind CSS
+
+* React
+* Vite
+* Tailwind CSS
+* JavaScript
 
 ### Backend
-- Python
-- FastAPI
 
-### AI / ML
-- Sentence Transformers
-- BM25
-- CrossEncoder Reranker
-- Qwen2.5
-- Qwen2.5-VL
+* Python
+* FastAPI
+* Uvicorn
 
-### Database
-- ChromaDB
+### Retrieval
+
+* ChromaDB
+* SentenceTransformers
+* BM25
+* Cross-Encoder
+
+### AI Models
+
+* Qwen2.5
+* Qwen2.5-VL
+* Ollama
 
 ### Document Processing
-- PyMuPDF
-- python-docx
-- Pytesseract
-- Pillow
+
+* PyMuPDF
+* python-docx
 
 ## Project Structure
 
-```
+```text
 multimodal-rag-assistant/
-
+│
 ├── backend/
 │   ├── app/
 │   │   ├── api/
+│   │   │   ├── upload.py
+│   │   │   ├── ask.py
+│   │   │   ├── chat.py
+│   │   │   ├── image_chat.py
+│   │   │   └── documents.py
+│   │   │
 │   │   ├── services/
+│   │   │   ├── pdf_service.py
+│   │   │   ├── docx_service.py
+│   │   │   ├── chunk_service.py
+│   │   │   ├── embedding_service.py
+│   │   │   ├── chroma_service.py
+│   │   │   ├── hybrid_search_service.py
+│   │   │   ├── reranker_service.py
+│   │   │   ├── rag_service.py
+│   │   │   ├── qwen_service.py
+│   │   │   └── image_service.py
+│   │   │
 │   │   └── main.py
 │   │
-│   ├── chroma_db/
 │   ├── uploads/
-│   └── requirements.txt
+│   └── chroma_db/
 │
 ├── frontend/
 │   ├── src/
-│   └── package.json
+│   │   ├── components/
+│   │   │   ├── Desktop.jsx
+│   │   │   ├── Sidebar.jsx
+│   │   │   ├── ChatWindow.jsx
+│   │   │   ├── ChatInput.jsx
+│   │   │   └── ChatMessage.jsx
+│   │   │
+│   │   └── App.jsx
+│   │
+│   ├── package.json
+│   └── vite.config.js
 │
 └── README.md
 ```
 
+## API Endpoints
+
+| Method | Endpoint      | Description                            |
+| ------ | ------------- | -------------------------------------- |
+| POST   | `/upload`     | Upload and process documents           |
+| POST   | `/ask`        | Ask questions about uploaded documents |
+| POST   | `/chat`       | Conversational document interaction    |
+| POST   | `/image-chat` | Process image-based queries            |
+| GET    | `/documents`  | Retrieve uploaded document information |
+
+FastAPI also provides interactive API documentation through Swagger UI.
+
 ## Installation
 
-### Clone Repository
+### Prerequisites
+
+Make sure the following are installed:
+
+* Python 3.10+
+* Node.js
+* npm
+* Ollama
+* Git
+
+### Clone the Repository
 
 ```bash
 git clone <repository-url>
+
+cd multimodal-rag-assistant
 ```
 
-### Backend Setup
+## Backend Setup
+
+Navigate to the backend:
 
 ```bash
 cd backend
 ```
 
-Create virtual environment:
+Create a virtual environment:
 
 ```bash
 python -m venv venv
 ```
 
-Activate environment (Windows):
+Activate the environment on Windows:
 
 ```bash
 venv\Scripts\activate
@@ -151,114 +334,131 @@ Install dependencies:
 pip install -r requirements.txt
 ```
 
-## Running the Application
-
-Start backend server:
+Start the FastAPI server:
 
 ```bash
 uvicorn app.main:app --reload
 ```
 
-Backend runs at:
+The backend will run at:
 
-```
+```text
 http://127.0.0.1:8000
 ```
 
-API documentation:
+Swagger API documentation:
 
-```
+```text
 http://127.0.0.1:8000/docs
 ```
 
-Start frontend:
+## Ollama Setup
+
+Install the required models through Ollama:
+
+```bash
+ollama pull qwen2.5:3b
+```
+
+```bash
+ollama pull qwen2.5-vl:3b
+```
+
+Make sure Ollama is running before starting the application.
+
+## Frontend Setup
+
+Navigate to the frontend:
 
 ```bash
 cd frontend
+```
+
+Install dependencies:
+
+```bash
 npm install
+```
+
+Start the development server:
+
+```bash
 npm run dev
 ```
 
-## API Endpoints
+The frontend will be available at the local URL provided by Vite.
 
-### Upload Document
+## How It Works
 
-```
-POST /upload
-```
+### Document Question Answering
 
-Uploads and indexes documents into ChromaDB.
-
-Supported:
-- PDF
-- DOCX
-- TXT
-- Images
-
----
-
-### Ask Questions
-
-```
-POST /ask
+```text
+1. User uploads a document
+2. Backend extracts the text
+3. Text is divided into chunks
+4. Chunks are converted into embeddings
+5. Embeddings are stored in ChromaDB
+6. User submits a question
+7. Semantic and BM25 retrieval are performed
+8. Retrieved candidates are reranked
+9. Relevant context is selected
+10. Context is passed to Qwen2.5
+11. Grounded response is returned to the user
 ```
 
-Pipeline:
-- Semantic retrieval
-- BM25 keyword retrieval
-- CrossEncoder reranking
-- RAG response generation
+### Image Question Answering
 
----
-
-### Image Chat
-
-```
-POST /image-chat
+```text
+1. User uploads an image
+2. Image is sent to the multimodal endpoint
+3. Qwen2.5-VL processes the image
+4. Visual information is interpreted
+5. The model generates the response
+6. Response is returned to the frontend
 ```
 
-Uses Qwen2.5-VL for image-based question answering.
+## Why Hybrid Retrieval?
 
----
+Semantic search is effective at understanding the meaning of a query, while keyword retrieval performs well when exact terminology matters.
 
-### List Documents
+Combining both approaches helps the system handle queries where either semantic similarity or exact keyword matching is important.
 
-```
-GET /documents
-```
+The Cross-Encoder reranker then improves the ordering of the retrieved candidates by evaluating query-document relevance more precisely.
 
-Returns indexed documents.
+## Design Goals
 
----
+The project focuses on:
 
-### Delete Document
-
-```
-DELETE /documents/{filename}
-```
-
-Removes a document from the knowledge base.
-
-## Workflow
-
-1. User uploads a document or image.
-2. Content is extracted from the file.
-3. Documents are split into chunks.
-4. Sentence Transformer generates embeddings.
-5. Embeddings are stored in ChromaDB.
-6. User submits a question.
-7. Relevant information is retrieved using hybrid search.
-8. CrossEncoder reranks retrieved chunks.
-9. Qwen generates an answer using retrieved context.
+* Grounded responses
+* Improved retrieval accuracy
+* Multimodal document interaction
+* Modular backend architecture
+* Local model inference
+* Persistent document storage
+* Separation between retrieval and generation
 
 ## Future Improvements
 
-- User authentication and authorization
-- Persistent conversation history
-- Cloud deployment
-- Advanced multimodal embeddings
-- Enterprise access control
+* Support for additional document formats
+* Metadata-aware retrieval
+* Conversation-aware retrieval
+* Retrieval evaluation metrics
+* Streaming responses
+* Authentication and authorization
+* Document-level access control
+* Advanced multimodal RAG
+* Production deployment
+* Distributed vector storage
 
-## License
+## Project Status
 
-This project is developed for educational and portfolio purposes.
+The core RAG pipeline, hybrid retrieval, reranking, document processing, multimodal interaction, REST APIs, and frontend interface are implemented.
+
+The project is currently being refined toward a more production-oriented enterprise architecture.
+
+## Author
+
+**Joel Sam**
+
+B.E. Computer Science and Engineering
+Artificial Intelligence & Machine Learning
